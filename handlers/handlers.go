@@ -89,6 +89,7 @@ func SearchHandler(bot *tgbotapi.BotAPI, chatID int64, pattern string) {
 		foundAuthors := make(map[string][]models.Poem)
 
 		msg := tgbotapi.NewMessage(chatID, "")
+		msg.ReplyMarkup = keyboards.SearchKeyboard
 		msg.ParseMode = "html"
 
 		for _, user := range users {
