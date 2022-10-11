@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"poetryLibrary/models"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -26,9 +27,9 @@ func AnswerFormat(
 		keyboardRow := make([]tgbotapi.InlineKeyboardButton, 0)
 
 		for i, poem := range poems {
-			// formatPoem := fmt.Sprintf("*Автор: %s*\n*Название: %s*\n\n%s", poem.Author, poem.Title, poem.Text)
+			formatData := packData(poem.Author, poem.Title)
 			keyboardRow = append(keyboardRow,
-				tgbotapi.NewInlineKeyboardButtonData(fmt.Sprintf("%d", i+1), "1"),
+				tgbotapi.NewInlineKeyboardButtonData(fmt.Sprintf("%d", i+1), formatData),
 			)
 			poemTitles += fmt.Sprintf("<i>%d) %s</i>\n", i+1, poem.Title)
 			if (i+1)%6 == 0 {
@@ -40,10 +41,17 @@ func AnswerFormat(
 		authors += poemTitles
 	}
 	answer += authors
-	if len(keyboardMarkup) == 0 {
-		log.Print("ТУТ 0 БРО")
-	}
+
 	return answer, tgbotapi.NewInlineKeyboardMarkup(keyboardMarkup...)
+}
+
+func packData(author string, title string) string {
+	shortAuthor := strings.Split(author, " ")[1]
+	maxSize := 60 - len(shortAuthor)
+	if len(title) <= maxSize {
+		return fmt.Sprintf("%s//%s", shortAuthor, title)
+	}
+	return fmt.Sprintf("%s//%v", shortAuthor, title[:maxSize])
 }
 
 func ChangeUserState(chatID int64, state int) {

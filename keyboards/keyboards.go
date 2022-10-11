@@ -7,13 +7,11 @@ import (
 const (
 	AUTHOR = "author"
 	TITLE  = "title"
-	TEXT   = "text"
 )
 
 const (
 	authorFilter = "По автору ✍️"
 	titleFilter  = "По названию 🔤"
-	textFilter   = "По тексту 📜"
 )
 
 const (

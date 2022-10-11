@@ -11,6 +11,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 	"poetryLibrary/handlers"
+	"poetryLibrary/keyboards"
 	. "poetryLibrary/utils"
 )
 
@@ -32,7 +33,11 @@ func main() {
 	for update := range updates {
 		if update.CallbackQuery != nil {
 			log.Print("Callback Принят! 🆗🆗🆗")
-			handlers.CallbackHandler(bot, update.CallbackQuery.From.ID, update.CallbackQuery)
+			if update.CallbackData() != keyboards.AUTHOR && update.CallbackData() != keyboards.TITLE {
+				handlers.SendPoemCallbackHandler(bot, update.CallbackQuery)
+			} else {
+				handlers.SearchCallbackHandler(bot, update.CallbackQuery)
+			}
 		}
 		if update.Message != nil {
 			chatID := update.Message.Chat.ID

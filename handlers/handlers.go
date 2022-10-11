@@ -15,14 +15,52 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func CallbackHandler(bot *tgbotapi.BotAPI, chatID int64, callbackQuery *tgbotapi.CallbackQuery) {
-	callback := tgbotapi.NewCallback(callbackQuery.ID, "Принято!")
+func SendPoemCallbackHandler(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery) {
+	callback := tgbotapi.NewCallback(callbackQuery.ID, "Принято!🤙")
 	if _, err := bot.Request(callback); err != nil {
 		log.Printf("Коллбэк не обработан!☢️ %s", err.Error())
 		return
 	}
 
-	var text string
+	poems, _ := utils.GetPoems()
+	users, _ := utils.GetUsers()
+	author := strings.Split(callbackQuery.Data, "//")[0]
+	title := strings.Split(callbackQuery.Data, "//")[1]
+	pattern := "<b>Автор: %s</b>\n<b>Название: %s</b>\n\n%s"
+
+	msg := tgbotapi.NewMessage(callbackQuery.From.ID, "")
+	msg.ParseMode = "html"
+	msg.ReplyMarkup = keyboards.StartKeyboard
+
+	var poemID int
+
+	for i, poem := range poems {
+		if strings.Contains(poem.Author, author) && strings.Contains(poem.Title, title) {
+			msg.Text = fmt.Sprintf(pattern, poem.Author, poem.Title, poem.Text)
+			poemID = i
+			break
+		}
+	}
+
+	for i, user := range users {
+		if callbackQuery.From.ID == user.ChatID {
+			users[i].ReadPoems = append(users[i].ReadPoems, poemID)
+		}
+	}
+
+	utils.WriteUsers(users)
+	bot.Send(msg)
+}
+
+func SearchCallbackHandler(bot *tgbotapi.BotAPI, callbackQuery *tgbotapi.CallbackQuery) {
+	callback := tgbotapi.NewCallback(callbackQuery.ID, "Принято!🤙")
+	if _, err := bot.Request(callback); err != nil {
+		log.Printf("Коллбэк не обработан!☢️ %s", err.Error())
+		return
+	}
+
+	text := ""
+	chatID := callbackQuery.From.ID
 
 	if callbackQuery.Data == keyboards.AUTHOR {
 		utils.ChangeUserState(chatID, models.SearchAuthor)
