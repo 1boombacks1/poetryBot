@@ -79,7 +79,7 @@ func WriteUsers(users []models.User) error {
 		return err
 	}
 
-	if err := ioutil.WriteFile("Data/users.json", data, 0); err != nil {
+	if err := ioutil.WriteFile("/usr/app/poetryLibraryBot/Data/users.json", data, 0); err != nil {
 		log.Printf("Ошибка в записи данных пользователей в файл!☢️\n%s", err.Error())
 		return err
 	}
@@ -87,7 +87,7 @@ func WriteUsers(users []models.User) error {
 }
 
 func GetUsers() ([]models.User, error) {
-	file, err := ioutil.ReadFile("Data/users.json")
+	file, err := ioutil.ReadFile("/usr/app/poetryLibraryBot/Data/users.json")
 	if err != nil {
 		log.Printf("Произошла ошибка в чтении файла users.json\n%s", err.Error())
 		return nil, err
@@ -104,7 +104,7 @@ func GetUsers() ([]models.User, error) {
 }
 
 func GetPoems() ([]models.Poem, error) {
-	file, err := ioutil.ReadFile("Data/out.json")
+	file, err := ioutil.ReadFile("/usr/app/poetryLibraryBot/Data/out.json")
 	if err != nil {
 		log.Printf("Не удалось прочитать файл!\n%s", err.Error())
 		return nil, err
